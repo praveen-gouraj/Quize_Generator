@@ -1,0 +1,4 @@
+Flask
+openai
+PyPDF2
+reportlab

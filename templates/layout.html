@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}Quiz Generator{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='pro-style.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body class="pro-app">
+  <div class="app-frame">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="logo">QG</div>
+        <div class="brand-title">QuizGen</div>
+      </div>
+      <nav class="nav">
+        <a href="{{ url_for('index') }}" class="nav-item">Home</a>
+        <a href="{{ url_for('dashboard') if False else '/dashboard' }}" class="nav-item active">Dashboard</a>
+        <a href="#history" class="nav-item">History</a>
+        <a href="#analytics" class="nav-item">Analytics</a>
+        <a href="#settings" class="nav-item">Settings</a>
+      </nav>
+      <div class="sidebar-foot">
+        <button id="collapseBtn" class="ghost small">Collapse</button>
+      </div>
+    </aside>
+
+    <div class="main-area">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="menuBtn" class="ghost">☰</button>
+          <h1 class="app-title">{% block header %}Dashboard{% endblock %}</h1>
+        </div>
+        <div class="topbar-right">
+          <div class="search"><input placeholder="Search quizzes, topics..." class="search-input"/></div>
+          <button id="themeToggle" class="button ghost small">Theme</button>
+        </div>
+      </header>
+
+      <main class="content" id="content">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+
+  <div id="pro-generating" class="pro-generating hidden">
+    <div class="spinner"></div>
+    <div class="message">Generating quiz — this may take a few seconds</div>
+  </div>
+
+  <script src="{{ url_for('static', filename='pro-app.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

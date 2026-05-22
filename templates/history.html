@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}History - QuizGen{% endblock %}
+{% block page_title %}Quiz History{% endblock %}
+
+{% block content %}
+
+<div class="history-container">
+    <!-- Filters -->
+    <div class="history-filters">
+        <div class="form-group">
+            <label>Sort By</label>
+            <select id="sortBy" class="form-input">
+                <option value="date-desc">Latest First</option>
+                <option value="date-asc">Oldest First</option>
+                <option value="score-desc">Highest Score</option>
+                <option value="score-asc">Lowest Score</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Filter by Difficulty</label>
+            <select id="difficultyFilter" class="form-input">
+                <option value="">All Difficulties</option>
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Search</label>
+            <input type="text" id="searchInput" class="form-input" placeholder="Search quizzes...">
+        </div>
+    </div>
+
+    <!-- Quiz History List -->
+    {% if history %}
+    <div class="quiz-history-list" id="historyList">
+        {% for quiz in history %}
+        <div class="history-card" data-date="{{ quiz.created_at }}" data-score="{{ quiz.percentage }}" data-difficulty="{{ quiz.difficulty }}">
+            <div style="flex: 1;">
+                <h3 style="margin: 0 0 var(--space-sm); color: var(--text-primary);">
+                    Quiz {{ loop.index }}
+                </h3>
+                <div class="history-meta">
+                    <span>📅 {{ quiz.created_at }}</span>
+                    <span>📊 Difficulty: {{ quiz.difficulty|title }}</span>
+                    <span>⏱️ {{ quiz.time_taken or '0' }}s</span>
+                    <span>❓ {{ quiz.total_questions or '0' }} questions</span>
+                </div>
+
+                {% if quiz.weak_topics %}
+                <div style="margin-top: var(--space-md);">
+                    <span style="color: var(--text-secondary); font-size: 0.9rem;">Weak topics:</span>
+                    <div style="display: flex; flex-wrap: wrap; gap: var(--space-sm); margin-top: var(--space-xs);">
+                        {% for topic in quiz.weak_topics.split(', ') %}
+                        <span class="history-badge" style="background: rgba(255, 165, 0, 0.15); border: 1px solid rgba(255, 165, 0, 0.3); color: #ffa500;">
+                            {{ topic.strip() }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div style="text-align: center; min-width: 120px; border-left: 1px solid var(--border); padding-left: var(--space-lg);">
+                <div style="font-size: 2rem; font-weight: 900; color: var(--accent);">
+                    {{ quiz.percentage or '0' }}%
+                </div>
+                <div style="color: var(--text-secondary); font-size: 0.85rem;">
+                    {{ quiz.score or '0' }}/{{ quiz.total_questions or '0' }}
+                </div>
+
+                <div class="history-actions" style="margin-top: var(--space-lg); display: flex; flex-direction: column; gap: var(--space-sm);">
+                    <button class="btn btn-sm btn-secondary" onclick="retakeQuiz('{{ quiz.quiz_id }}')">
+                        Retake
+                    </button>
+                    <button class="btn btn-sm btn-ghost" onclick="shareQuiz('{{ quiz.quiz_id }}')">
+                        Share
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">📚</div>
+        <h3 style="color: var(--text-primary); margin-top: var(--space-lg);">No Quiz History</h3>
+        <p style="color: var(--text-secondary);">You haven't taken any quizzes yet.</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary" style="margin-top: var(--space-lg);">Create Your First Quiz</a>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function retakeQuiz(quizId) {
+        // Navigate to quiz page with quiz ID
+        showNotification('Loading quiz...');
+    }
+
+    function shareQuiz(quizId) {
+        fetch(`/api/share-quiz`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quiz_id: quizId })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.share_link) {
+                copyToClipboard(data.share_link);
+                showNotification('Share link copied! 🔗');
+            }
+        })
+        .catch(() => showNotification('Failed to share', 'error'));
+    }
+
+    // Sorting and filtering
+    const sortBy = document.getElementById('sortBy');
+    const difficultyFilter = document.getElementById('difficultyFilter');
+    const searchInput = document.getElementById('searchInput');
+
+    function filterAndSort() {
+        const cards = document.querySelectorAll('.history-card');
+        const sortValue = sortBy?.value || 'date-desc';
+        const diffValue = difficultyFilter?.value || '';
+        const searchValue = searchInput?.value.toLowerCase() || '';
+
+        // Filter
+        cards.forEach(card => {
+            const difficulty = card.dataset.difficulty;
+            const matchesDiff = !diffValue || difficulty === diffValue;
+            const matchesSearch = !searchValue || card.textContent.toLowerCase().includes(searchValue);
+            card.style.display = (matchesDiff && matchesSearch) ? 'grid' : 'none';
+        });
+    }
+
+    sortBy?.addEventListener('change', filterAndSort);
+    difficultyFilter?.addEventListener('change', filterAndSort);
+    searchInput?.addEventListener('input', filterAndSort);
+</script>
+{% endblock %}

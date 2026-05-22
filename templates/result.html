@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block title %}Quiz Results - QuizGen{% endblock %}
+{% block page_title %}Quiz Results{% endblock %}
+
+{% block content %}
+
+<div class="results-container">
+    <!-- Score Display -->
+    <div class="score-display">
+        <div class="score-circle">
+            <h1 class="score-percentage">{{ percentage or '0' }}%</h1>
+            <p class="score-label">Score</p>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 1.1rem; margin-top: var(--space-lg);">
+            You answered <strong style="color: var(--text-primary);">{{ score or 0 }} out of {{ total or 0 }}</strong> questions correctly
+        </p>
+    </div>
+
+    <!-- Results Grid -->
+    <div class="results-grid">
+        <div class="result-stat">
+            <div class="stat-value">{{ score or 0 }}/{{ total or 0 }}</div>
+            <div class="stat-label">Correct Answers</div>
+        </div>
+
+        <div class="result-stat">
+            <div class="stat-value">{{ wrong_count or 0 }}</div>
+            <div class="stat-label">Incorrect</div>
+        </div>
+
+        <div class="result-stat">
+            <div class="stat-value">{{ difficulty|title or 'Medium' }}</div>
+            <div class="stat-label">Difficulty Level</div>
+        </div>
+
+        <div class="result-stat">
+            <div class="stat-value">+10 XP</div>
+            <div class="stat-label">Points Earned</div>
+        </div>
+    </div>
+
+    <!-- Weak Topics -->
+    {% if weak_topics %}
+    <div class="weak-topics">
+        <h2 class="weak-topics-title">📚 Topics Need Practice</h2>
+        <div class="topic-list">
+            {% if weak_topics is string %}
+                {% for topic in weak_topics.split(',') %}
+                <span class="topic-badge">{{ topic.strip() }}</span>
+                {% endfor %}
+            {% else %}
+                {% for topic in weak_topics %}
+                <span class="topic-badge">{{ topic }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="recommendation">
+            <strong>💡 Recommendation:</strong> Focus on practicing the above topics. We've saved your weak areas to personalize future quizzes for you.
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg">
+            ➕ Generate Another Quiz
+        </a>
+        <a href="{{ url_for('history') }}" class="btn btn-secondary btn-lg">
+            📚 View History
+        </a>
+        <button class="btn btn-ghost btn-lg btn-download-pdf" data-quiz-id="{{ quiz_id or '' }}">
+            📥 Download PDF
+        </button>
+        <button class="btn btn-ghost btn-lg btn-share-quiz" data-quiz-id="{{ quiz_id or '' }}">
+            🔗 Share Quiz
+        </button>
+    </div>
+
+    <!-- Answer Review Section -->
+    <div class="answer-review">
+        <h2 class="review-title">Answer Review</h2>
+        <div class="review-items">
+            {% for item in details %}
+            <div class="review-item {% if item.is_correct %}correct{% else %}incorrect{% endif %}">
+                <h3 class="review-item-title">
+                    <span class="review-badge {% if item.is_correct %}correct{% else %}incorrect{% endif %}">
+                        {% if item.is_correct %}✓{% else %}✗{% endif %}
+                    </span>
+                    {{ loop.index }}. {{ item.question }}
+                </h3>
+
+                <div class="review-question">
+                    <p style="color: var(--text-secondary); margin: 0;">
+                        {% if item.topic %}<strong>Topic:</strong> {{ item.topic }}<br>{% endif %}
+                    </p>
+                </div>
+
+                <div class="review-answer">
+                    <div class="review-answer-label">
+                        {% if item.is_correct %}
+                        ✅ Your answer (Correct)
+                        {% else %}
+                        ❌ Your answer
+                        {% endif %}
+                    </div>
+                    <p style="margin: var(--space-sm) 0 0; color: var(--text-primary);">
+                        <strong>{{ item.selected_letter }}</strong> - {{ item.selected_text }}
+                    </p>
+                </div>
+
+                {% if not item.is_correct %}
+                <div class="review-answer" style="margin-top: var(--space-md); background: rgba(100, 227, 154, 0.08); border-left: 3px solid #64e39a;">
+                    <div class="review-answer-label">
+                        ✅ Correct answer
+                    </div>
+                    <p style="margin: var(--space-sm) 0 0; color: var(--text-primary);">
+                        <strong>{{ item.correct_letter }}</strong> - {{ item.correct_text }}
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Download PDF button
+    document.querySelectorAll('.btn-download-pdf').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const quizId = this.dataset.quizId;
+            if (quizId) {
+                fetch(`/download-pdf/${quizId}`)
+                    .then(response => response.blob())
+                    .then(blob => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `quiz-${quizId}.pdf`;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                        showNotification('PDF downloaded!');
+                    })
+                    .catch(() => showNotification('Failed to download PDF', 'error'));
+            }
+        });
+    });
+
+    // Share quiz button
+    document.querySelectorAll('.btn-share-quiz').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const quizId = this.dataset.quizId;
+            if (quizId) {
+                fetch(`/api/share-quiz`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ quiz_id: quizId })
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.share_link) {
+                        copyToClipboard(data.share_link);
+                        showNotification('Share link copied! 🔗');
+                    }
+                })
+                .catch(() => showNotification('Failed to share', 'error'));
+            }
+        });
+    });
+</script>
+{% endblock %}

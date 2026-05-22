@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Quiz - QuizGen{% endblock %}
+{% block page_title %}Take Quiz{% endblock %}
+
+{% block content %}
+
+<div class="quiz-container">
+    <!-- Quiz Header -->
+    <div class="quiz-header">
+        <div>
+            <h2 class="quiz-title">Quiz</h2>
+        </div>
+        <div class="quiz-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+            </div>
+            <span class="progress-text" id="progressText">0/{{ quiz|length }} answered</span>
+        </div>
+    </div>
+
+    <!-- Questions Form -->
+    <form method="POST" action="{{ url_for('submit_quiz') }}" id="quizForm" class="quiz-form">
+        {% for item in quiz %}
+            {% set question_index = loop.index0 %}
+            <div class="question-card" data-question-id="{{ question_index }}">
+                <div class="question-text">
+                    <span style="color: var(--text-secondary); font-size: 0.9rem;">Question {{ loop.index }} of {{ quiz|length }}</span>
+                    <h3 style="margin: var(--space-sm) 0 0;">{{ item.question }}</h3>
+                    {% if item.topic %}
+                    <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: var(--space-sm);">
+                        📚 Topic: {{ item.topic }}
+                    </p>
+                    {% endif %}
+                </div>
+
+                <div class="options-list">
+                    {% set labels = ['A', 'B', 'C', 'D'] %}
+                    {% for option in item.options %}
+                    <label class="option-item">
+                        <input type="radio" 
+                               name="q{{ question_index }}" 
+                               value="{{ labels[loop.index0] }}"
+                               onchange="updateProgress()">
+                        <span class="option-letter">{{ labels[loop.index0] }}</span>
+                        <span class="option-text">{{ option }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+
+        <!-- Submit Button -->
+        <div class="quiz-actions">
+            <button type="submit" class="btn btn-primary btn-lg btn-block">Submit Quiz</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Initialize progress on page load
+    function updateProgress() {
+        const questions = document.querySelectorAll('.question-card');
+        const answered = document.querySelectorAll('input[type="radio"]:checked').length;
+        const total = questions.length;
+        
+        const percentage = (answered / total) * 100;
+        document.getElementById('progressFill').style.width = percentage + '%';
+        document.getElementById('progressText').textContent = `${answered}/${total} answered`;
+    }
+
+    // Form validation on submit
+    document.getElementById('quizForm').addEventListener('submit', (e) => {
+        const unanswered = document.querySelectorAll('.question-card').length - 
+                          document.querySelectorAll('input[type="radio"]:checked').length;
+        
+        if (unanswered > 0) {
+            e.preventDefault();
+            showNotification(`Please answer all ${unanswered} remaining questions`, 'error');
+        }
+    });
+
+    // Initialize on load
+    updateProgress();
+</script>
+{% endblock %}

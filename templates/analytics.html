@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+
+{% block title %}Analytics - QuizGen{% endblock %}
+{% block page_title %}Your Analytics{% endblock %}
+
+{% block content %}
+<div class="analytics-container">
+    <div class="section-header">
+        <h2>Performance Analytics</h2>
+        <p class="section-subtitle">Track your progress and improvement over time</p>
+    </div>
+
+    <div class="metrics-grid">
+        <div class="metric-card card glassmorphism animate-slideInLeft">
+            <div class="metric-icon">📊</div>
+            <div class="metric-content">
+                <div class="metric-value">{{ analytics.total_quizzes if analytics else 0 }}</div>
+                <div class="metric-label">Total Quizzes</div>
+            </div>
+        </div>
+
+        <div class="metric-card card glassmorphism animate-slideInUp">
+            <div class="metric-icon">🎯</div>
+            <div class="metric-content">
+                <div class="metric-value">{{ (analytics.avg_accuracy if analytics else 0)|round|int }}%</div>
+                <div class="metric-label">Average Accuracy</div>
+            </div>
+        </div>
+
+        <div class="metric-card card glassmorphism animate-slideInDown">
+            <div class="metric-icon">🔥</div>
+            <div class="metric-content">
+                <div class="metric-value">{{ analytics.streak if analytics else 0 }}</div>
+                <div class="metric-label">Day Streak</div>
+            </div>
+        </div>
+
+        <div class="metric-card card glassmorphism animate-slideInRight">
+            <div class="metric-icon">⭐</div>
+            <div class="metric-content">
+                <div class="metric-value">{{ analytics.xp_points if analytics else 0 }}</div>
+                <div class="metric-label">XP Points</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="charts-section card glassmorphism">
+        <h3 class="card-title">📈 Progress Chart</h3>
+        <canvas id="accuracyChart"></canvas>
+    </div>
+
+    <div class="card glassmorphism">
+        <h3 class="card-title">📋 Improvement Summary</h3>
+        <div class="summary-content">
+            <div class="summary-item">
+                <span class="summary-icon">✨</span>
+                <div>
+                    <p class="summary-title">Consistency</p>
+                    <p class="summary-text">You've taken {{ analytics.total_quizzes if analytics else 0 }} quizzes so far. Keep up the great work!</p>
+                </div>
+            </div>
+            <div class="summary-item">
+                <span class="summary-icon">🚀</span>
+                <div>
+                    <p class="summary-title">Growth</p>
+                    <p class="summary-text">Your average accuracy is {{ (analytics.avg_accuracy if analytics else 0)|round|int }}%. Focus on weak areas to improve further.</p>
+                </div>
+            </div>
+            <div class="summary-item">
+                <span class="summary-icon">🏆</span>
+                <div>
+                    <p class="summary-title">Achievement</p>
+                    <p class="summary-text">You've earned {{ analytics.xp_points if analytics else 0 }} XP points. Maintain your {{ analytics.streak if analytics else 0 }} day streak!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.analytics-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.metric-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px;
+}
+
+.metric-icon {
+    font-size: 2.5rem;
+    flex-shrink: 0;
+}
+
+.metric-value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    background: var(--primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+}
+
+.metric-label {
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.charts-section {
+    margin-bottom: 24px;
+    position: relative;
+    height: 300px;
+}
+
+.summary-content {
+    display: grid;
+    gap: 16px;
+}
+
+.summary-item {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    background: rgba(47, 126, 255, 0.05);
+    border-radius: 12px;
+}
+
+.summary-icon {
+    font-size: 1.8rem;
+    flex-shrink: 0;
+}
+
+.summary-title {
+    margin: 0 0 4px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.summary-text {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+@media (max-width: 1024px) {
+    .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const ctx = document.getElementById('accuracyChart')?.getContext('2d');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
+                datasets: [{
+                    label: 'Accuracy (%)',
+                    data: [65, 72, 68, 78, 82, 85],
+                    borderColor: '#2f7eff',
+                    backgroundColor: 'rgba(47, 126, 255, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#41b6ff',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: '#e6f0ff', font: { size: 12 } }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: { color: '#8fa9ce' },
+                        grid: { color: 'rgba(116, 157, 214, 0.1)' }
+                    },
+                    x: {
+                        ticks: { color: '#8fa9ce' },
+                        grid: { color: 'rgba(116, 157, 214, 0.1)' }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Quiz</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <main class="shell quiz-shell">
+        <header class="quiz-header card banner-card">
+            <div>
+                <p class="eyebrow">Hello, UI Tester</p>
+                <h1>Quiz ready</h1>
+                <p class="lede">Difficulty level: Medium</p>
+            </div>
+            <div class="header-actions">
+                <a class="button ghost" href="/">Start Over</a>
+                <button class="button ghost" onclick="window.print();return false;">Download / Print</button>
+            </div>
+        </header>
+
+        <section class="card">
+            <form method="POST" action="/submit" class="quiz-form quiz-list" id="quizForm">
+                
+                    
+                    <article class="question-card" id="q-0">
+                        <h3>1. Which term is most associated with sample?</h3>
+                        <p class="topic-tag">Topic: Sample <span class="qtype">Association</span></p>
+
+                        <div class="options-grid">
+                            
+                            
+                                <label class="option-row">
+                                    <input type="radio" name="question_0" value="A">
+                                    <span class="option-letter">A</span>
+                                    <span class="option-text">Method</span>
+                                </label>
+                            
+                                <label class="option-row">
+                                    <input type="radio" name="question_0" value="B">
+                                    <span class="option-letter">B</span>
+                                    <span class="option-text">Sample</span>
+                                </label>
+                            
+                                <label class="option-row">
+                                    <input type="radio" name="question_0" value="C">
+                                    <span class="option-letter">C</span>
+                                    <span class="option-text">Model</span>
+                                </label>
+                            
+                                <label class="option-row">
+                                    <input type="radio" name="question_0" value="D">
+                                    <span class="option-letter">D</span>
+                                    <span class="option-text">Materials</span>
+                                </label>
+                            
+                        </div>
+                    </article>
+                
+                    
+                    <article class="question-card" id="q-1">
+                        <h3>2. What best defines Study?</h3>
+                        <p class="topic-tag">Topic: Study <span class="qtype">Definition</span></p>
+
+                        <div class="options-grid">
+                            
+                            
+                                <label class="option-row">
+                                    <input type="radio" name="question_1" value="A">
+                                    <span class="option-letter">A</span>
+                                    <span class="option-text">Theory</span>
+                                </label>
+                            
+                                <label class="option-row">
+                                    <input type="radio" name="question_1" value="B">
+                                    <span class="option-letter">B</span>
+                                    <span class="option-text">The definition of Study</span>
+                                </label>
+                            
+                                <label class="option-row">
+                                    <input type="radio" name="question_1" value="C">
+                                    <span class="option-letter">C</span>
+                                    <span class="option-text">System</span>
+                                </label>
+                            
+                                <label class="option-row">
+                                    <input type="radio" name="question_1" value="D">
+                                    <span class="option-letter">D</span>
+                                    <span class="option-text">Process</span>
+                                </label>
+                            
+                        </div>
+                    </article>
+                
+                    
+                    <article class="question-card" id="q-2">
+                        <h3>3. Which option shows an application of Project?</h3>
+                        <p class="topic-tag">Topic: Project <span class="qtype">Application</span></p>
+
+                        <div class="options-grid">
+                            
+                            
+                                <label class="option-row">
+                                    <input type="radio" name="question_2" value="A">
+                                    <span class="option-letter">A</span>
+                                    <span class="option-text">Resources</span>
+                                </label>
+                            
+                                <label class="option-row">
+                                    <input type="radio" name="question_2" value="B">
+                                    <span class="option-letter">B</span>
+                                    <span class="option-text">Materials</span>
+                                </label>
+                            
+                                <label class="option-row">
+                                    <input type="radio" name="question_2" value="C">
+                                    <span class="option-letter">C</span>
+                                    <span class="option-text">Theory</span>
+                                </label>
+                            
+                                <label class="option-row">
+                                    <input type="radio" name="question_2" value="D">
+                                    <span class="option-letter">D</span>
+                                    <span class="option-text">Use Project to solve X</span>
+                                </label>
+                            
+                        </div>
+                    </article>
+                
+                    
+                    <article class="question-card" id="q-3">
+                        <h3>4. Resources is a core concept in the material. True or False?</h3>
+                        <p class="topic-tag">Topic: Resources <span class="qtype">True_false</span></p>
+
+                        <div class="options-grid">
+                            
+                            
+                                <label class="option-row">
+                                    <input type="radio" name="question_3" value="A">
+                                    <span class="option-letter">A</span>
+                                    <span class="option-text">True</span>
+                                </label>
+                            
+                                <label class="option-row">
+                                    <input type="radio" name="question_3" value="B">
+                                    <span class="option-letter">B</span>
+                                    <span class="option-text">False</span>
+                                </label>
+                            
+                                <label class="option-row">
+                                    <input type="radio" name="question_3" value="C">
+                                    <span class="option-letter">C</span>
+                                    <span class="option-text">True</span>
+                                </label>
+                            
+                                <label class="option-row">
+                                    <input type="radio" name="question_3" value="D">
+                                    <span class="option-letter">D</span>
+                                    <span class="option-text">False</span>
+                                </label>
+                            
+                        </div>
+                    </article>
+                
+                    
+                    <article class="question-card" id="q-4">
+                        <h3>5. Which term best represents the idea of materials?</h3>
+                        <p class="topic-tag">Topic: Materials <span class="qtype">Method</span></p>
+
+                        <div class="options-grid">
+                            
+                            
+                                <label class="option-row">
+                                    <input type="radio" name="question_4" value="A">
+                                    <span class="option-letter">A</span>
+                                    <span class="option-text">Project</span>
+                                </label>
+                            
+                                <label class="option-row">
+                                    <input type="radio" name="question_4" value="B">
+                                    <span class="option-letter">B</span>
+                                    <span class="option-text">Concept</span>
+                                </label>
+                            
+                                <label class="option-row">
+                                    <input type="radio" name="question_4" value="C">
+                                    <span class="option-letter">C</span>
+                                    <span class="option-text">Method</span>
+                                </label>
+                            
+                                <label class="option-row">
+                                    <input type="radio" name="question_4" value="D">
+                                    <span class="option-letter">D</span>
+                                    <span class="option-text">Materials</span>
+                                </label>
+                            
+                        </div>
+                    </article>
+                
+
+                <div style="height:100px"></div>
+            </form>
+        </section>
+
+        <div class="bottom-bar card">
+            <div class="bottom-left">
+                <button class="button primary" id="submitBtn">Submit Test</button>
+                <button class="button ghost" id="nextUnanswered">Next unanswered question</button>
+            </div>
+            <div class="bottom-right">
+                <div id="progressCounter">0/5</div>
+            </div>
+        </div>
+
+    <script src="/static/app.js"></script>
+    </main>
+</body>
+</html>

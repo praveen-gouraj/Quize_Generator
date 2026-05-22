@@ -1,0 +1,302 @@
+{% extends 'base.html' %}
+
+{% block title %}Quiz - QuizGen{% endblock %}
+{% block page_title %}Quiz{% endblock %}
+
+{% block content %}
+<div class="quiz-container">
+    <div class="quiz-header-bar">
+        <div class="progress-section">
+            <div class="progress-text">
+                <span id="questionNumber">1</span> / <span id="totalQuestions">{{ quiz|length }}</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+        </div>
+        <div class="quiz-header-right">
+            <div class="timer" id="timer">
+                <span class="icon">⏱️</span>
+                <span id="timerValue">00:00</span>
+            </div>
+        </div>
+    </div>
+
+    <form method="POST" action="{{ url_for('submit_quiz') }}" id="quizForm" class="quiz-form">
+        <input type="hidden" name="time_taken" id="timeTaken" value="0">
+        
+        {% for item in quiz %}
+        <div class="question-slide" id="question-{{ loop.index0 }}" data-question="{{ loop.index0 }}">
+            <div class="question-number">Question {{ loop.index }} of {{ quiz|length }}</div>
+            
+            <div class="question-container card glassmorphism">
+                <h2 class="question-text">{{ item.question }}</h2>
+                
+                {% if item.topic %}
+                <div class="question-meta">
+                    <span class="topic-badge">{{ item.topic }}</span>
+                    <span class="type-badge">{{ item.qtype|upper }}</span>
+                </div>
+                {% endif %}
+
+                <div class="options-list">
+                    {% for option in item.options %}
+                    <label class="option">
+                        <input type="radio" 
+                               name="question_{{ loop.index0 }}" 
+                               value="{{ chr(65 + loop.index0) }}"
+                               data-question="{{ loop.index0 }}">
+                        <span class="option-letter">{{ chr(65 + loop.index0) }}</span>
+                        <span class="option-text">{{ option }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="question-actions">
+                {% if loop.index0 > 0 %}
+                <button type="button" class="button button-ghost prev-btn" onclick="previousQuestion()">
+                    <span class="icon">←</span> Previous
+                </button>
+                {% endif %}
+
+                {% if loop.index0 < quiz|length - 1 %}
+                <button type="button" class="button button-primary next-btn" onclick="nextQuestion()">
+                    Next <span class="icon">→</span>
+                </button>
+                {% else %}
+                <button type="submit" class="button button-primary submit-btn">
+                    Submit Quiz <span class="icon">✓</span>
+                </button>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </form>
+
+    <div class="quiz-navigation">
+        <div class="nav-questions">
+            {% for item in quiz %}
+            <button type="button" 
+                    class="nav-dot" 
+                    data-question="{{ loop.index0 }}"
+                    title="Question {{ loop.index }}"
+                    onclick="goToQuestion({{ loop.index0 }})">
+                {{ loop.index }}
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+.quiz-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.quiz-header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: var(--card);
+    border-radius: 16px;
+    margin-bottom: 24px;
+    gap: 20px;
+}
+
+.progress-section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.progress-text {
+    font-weight: 600;
+    color: var(--text);
+    min-width: 50px;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.quiz-header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.question-slide {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.question-slide.active {
+    display: block;
+}
+
+.question-number {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.question-meta {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.topic-badge,
+.type-badge {
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: rgba(47, 126, 255, 0.1);
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.type-badge {
+    background: rgba(16, 185, 129, 0.1);
+    color: #a7f3d0;
+}
+
+.question-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+    margin-top: 24px;
+}
+
+.prev-btn,
+.next-btn,
+.submit-btn {
+    min-width: 120px;
+}
+
+.quiz-navigation {
+    margin-top: 32px;
+    padding: 20px;
+    background: var(--card);
+    border-radius: 16px;
+    text-align: center;
+}
+
+.nav-questions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+    gap: 8px;
+}
+
+.nav-dot {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    border: 2px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.nav-dot:hover {
+    border-color: rgba(47, 126, 255, 0.5);
+    background: rgba(47, 126, 255, 0.1);
+}
+
+.nav-dot.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.nav-dot.answered {
+    border-color: rgba(16, 185, 129, 0.5);
+    background: rgba(16, 185, 129, 0.1);
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentQuestion = 0;
+const totalQuestions = {{ quiz|length }};
+let startTime = Date.now();
+let timerInterval;
+
+function goToQuestion(index) {
+    document.querySelector('.question-slide.active')?.classList.remove('active');
+    document.getElementById(`question-${index}`).classList.add('active');
+    currentQuestion = index;
+    updateProgress();
+    window.scrollTo(0, 0);
+}
+
+function nextQuestion() {
+    if (currentQuestion < totalQuestions - 1) {
+        goToQuestion(currentQuestion + 1);
+    }
+}
+
+function previousQuestion() {
+    if (currentQuestion > 0) {
+        goToQuestion(currentQuestion - 1);
+    }
+}
+
+function updateProgress() {
+    const percentage = ((currentQuestion + 1) / totalQuestions) * 100;
+    document.getElementById('progressFill').style.width = percentage + '%';
+    document.getElementById('questionNumber').textContent = currentQuestion + 1;
+    
+    document.querySelectorAll('.nav-dot').forEach((dot, index) => {
+        dot.classList.remove('active');
+        if (index === currentQuestion) dot.classList.add('active');
+    });
+    
+    const radios = document.querySelectorAll(`#question-${currentQuestion} input[type="radio"]`);
+    radios.forEach(radio => {
+        if (radio.checked) {
+            document.querySelectorAll('.nav-dot')[currentQuestion].classList.add('answered');
+        }
+    });
+}
+
+function startTimer() {
+    timerInterval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const minutes = Math.floor(elapsed / 60);
+        const seconds = elapsed % 60;
+        document.getElementById('timerValue').textContent = 
+            `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        document.getElementById('timeTaken').value = elapsed;
+    }, 1000);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    goToQuestion(0);
+    startTimer();
+    
+    document.getElementById('quizForm').addEventListener('submit', (e) => {
+        clearInterval(timerInterval);
+    });
+
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', updateProgress);
+    });
+});
+</script>
+{% endblock %}

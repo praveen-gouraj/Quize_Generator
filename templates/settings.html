@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+
+{% block title %}Settings - QuizGen{% endblock %}
+{% block page_title %}Settings{% endblock %}
+
+{% block content %}
+
+<div class="settings-sections">
+    <!-- Appearance Settings -->
+    <div class="settings-section">
+        <h2 class="settings-title">🎨 Appearance</h2>
+        
+        <div class="toggle-item">
+            <div class="toggle-label">
+                <h4>Dark Mode</h4>
+                <p class="toggle-description">Use dark theme to reduce eye strain</p>
+            </div>
+            <button class="toggle-switch active" id="darkModeToggle" data-setting="darkMode"></button>
+        </div>
+    </div>
+
+    <!-- Quiz Preferences -->
+    <div class="settings-section">
+        <h2 class="settings-title">⚙️ Quiz Preferences</h2>
+        
+        <div class="settings-grid">
+            <div class="form-group">
+                <label>Default Difficulty</label>
+                <select name="default_difficulty" class="form-input">
+                    <option value="easy">Easy</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Default Number of Questions</label>
+                <select name="default_questions" class="form-input">
+                    <option value="5">5 Questions</option>
+                    <option value="10" selected>10 Questions</option>
+                    <option value="15">15 Questions</option>
+                    <option value="20">20 Questions</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Default Language</label>
+                <select name="default_language" class="form-input">
+                    <option value="auto" selected>Auto Detect</option>
+                    <option value="english">English</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Question Type</label>
+                <select name="default_qtype" class="form-input">
+                    <option value="mcq" selected>Multiple Choice</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Features -->
+    <div class="settings-section">
+        <h2 class="settings-title">⏱️ Quiz Features</h2>
+        
+        <div class="toggle-item">
+            <div class="toggle-label">
+                <h4>Timer</h4>
+                <p class="toggle-description">Enable countdown timer for quizzes</p>
+            </div>
+            <button class="toggle-switch active" data-setting="timerEnabled"></button>
+        </div>
+
+        <div class="toggle-item">
+            <div class="toggle-label">
+                <h4>Instant Feedback</h4>
+                <p class="toggle-description">Show correct/incorrect immediately after answering</p>
+            </div>
+            <button class="toggle-switch" data-setting="instantFeedback"></button>
+        </div>
+
+        <div class="toggle-item">
+            <div class="toggle-label">
+                <h4>Auto-Difficulty Adjustment</h4>
+                <p class="toggle-description">Automatically adjust difficulty based on performance</p>
+            </div>
+            <button class="toggle-switch active" data-setting="autoDifficulty"></button>
+        </div>
+    </div>
+
+    <!-- Notifications -->
+    <div class="settings-section">
+        <h2 class="settings-title">🔔 Notifications</h2>
+        
+        <div class="toggle-item">
+            <div class="toggle-label">
+                <h4>Quiz Completion Alerts</h4>
+                <p class="toggle-description">Get notified when you complete a quiz</p>
+            </div>
+            <button class="toggle-switch active" data-setting="quizAlerts"></button>
+        </div>
+
+        <div class="toggle-item">
+            <div class="toggle-label">
+                <h4>Daily Streak Reminders</h4>
+                <p class="toggle-description">Reminder to maintain your daily streak</p>
+            </div>
+            <button class="toggle-switch active" data-setting="streakReminders"></button>
+        </div>
+
+        <div class="toggle-item">
+            <div class="toggle-label">
+                <h4>Weekly Progress Reports</h4>
+                <p class="toggle-description">Receive weekly summary of your performance</p>
+            </div>
+            <button class="toggle-switch" data-setting="weeklyReports"></button>
+        </div>
+    </div>
+
+    <!-- Data & Privacy -->
+    <div class="settings-section">
+        <h2 class="settings-title">📊 Data & Privacy</h2>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-lg); border-bottom: 1px solid var(--border);">
+            <div>
+                <h4 style="margin: 0 0 var(--space-xs);">Download Your Data</h4>
+                <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">
+                    Export all your quiz data and statistics
+                </p>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="downloadUserData();">
+                📥 Download
+            </button>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-lg); border-bottom: 1px solid var(--border);">
+            <div>
+                <h4 style="margin: 0 0 var(--space-xs);">Export Quiz History</h4>
+                <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">
+                    Download all your quiz attempts as CSV
+                </p>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="exportQuizHistory();">
+                📋 Export
+            </button>
+        </div>
+    </div>
+
+    <!-- Account Settings -->
+    <div class="settings-section">
+        <h2 class="settings-title">👤 Account</h2>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-lg); border-bottom: 1px solid var(--border);">
+            <div>
+                <h4 style="margin: 0 0 var(--space-xs);">Username</h4>
+                <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">
+                    {{ student_name or 'Anonymous' }}
+                </p>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-lg); border-bottom: 1px solid var(--border);">
+            <div>
+                <h4 style="margin: 0 0 var(--space-xs);">Account Created</h4>
+                <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">
+                    May 4, 2026
+                </p>
+            </div>
+        </div>
+
+        <div style="padding: var(--space-lg);">
+            <button class="btn btn-danger btn-lg btn-block" onclick="if(confirm('Are you sure? This cannot be undone.')) deleteAccount();">
+                🗑️ Delete Account
+            </button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function downloadUserData() {
+        showNotification('Downloading your data...');
+        // API call to generate and download user data
+    }
+
+    function exportQuizHistory() {
+        showNotification('Exporting quiz history...');
+        // API call to generate CSV export
+    }
+
+    function deleteAccount() {
+        fetch('/api/delete-account', { method: 'POST' })
+            .then(() => {
+                showNotification('Account deleted. Redirecting...');
+                setTimeout(() => window.location.href = '/', 2000);
+            })
+            .catch(() => showNotification('Failed to delete account', 'error'));
+    }
+
+    // Initialize toggle switches from localStorage
+    document.querySelectorAll('.toggle-switch').forEach(toggle => {
+        const setting = toggle.dataset.setting;
+        if (setting) {
+            const saved = localStorage.getItem(`setting-${setting}`);
+            if (saved === 'true') {
+                toggle.classList.add('active');
+            }
+        }
+
+        toggle.addEventListener('click', function() {
+            this.classList.toggle('active');
+            const setting = this.dataset.setting;
+            if (setting) {
+                localStorage.setItem(`setting-${setting}`, this.classList.contains('active'));
+            }
+        });
+    });
+
+    // Dark mode toggle
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('click', function() {
+            toggleTheme();
+        });
+    }
+</script>
+{% endblock %}

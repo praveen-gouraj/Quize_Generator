@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Based Personalized Quiz Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='pro-style.css') }}">
+</head>
+<body>
+    <main class="shell">
+        <section class="hero card">
+            <div class="hero-copy">
+                <p class="eyebrow">AI-Based Personalized Quiz Generator</p>
+                <h1>Turn study notes into a quick personalized quiz.</h1>
+                <p class="lede">
+                    Upload a PDF or text file, generate MCQs from the content, and track your weak topics over time.
+                </p>
+                <div class="pill-row">
+                    <span class="pill">Recommended difficulty: {{ recommended_difficulty|title }}</span>
+                    <span class="pill">Format: PDF or TXT</span>
+                </div>
+                <div style="margin-top:18px">
+                    <a href="/dashboard" class="button primary">Open Dashboard</a>
+                </div>
+            </div>
+            <div class="hero-panel">
+                <div class="stats">
+                    <div>
+                        <strong>5</strong>
+                        <span>MCQs per quiz</span>
+                    </div>
+                    <div>
+                        <strong>SQLite</strong>
+                        <span>Performance storage</span>
+                    </div>
+                    <div>
+                        <strong>JSON</strong>
+                        <span>Structured OpenAI output</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="card form-card">
+            <h2>Generate your quiz</h2>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-stack">
+                        {% for category, message in messages %}
+                            <div class="flash {{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" enctype="multipart/form-data" class="quiz-form" id="generateForm">
+                <label>
+                    Your name
+                    <input type="text" name="student_name" placeholder="Enter your name" value="{{ student_name }}" required class="full-input">
+                </label>
+
+                <div class="source-tabs">
+                    <button type="button" class="tab active" data-source="file">File</button>
+                    <button type="button" class="tab" data-source="text">Text</button>
+                </div>
+
+                <input type="hidden" name="source_type" id="source_type" value="file">
+
+                <div class="upload-block">
+                    <div class="source-file">
+                        <label class="file-chooser">
+                            <input type="file" name="study_material" id="study_material" accept=".pdf,.txt,.text">
+                            <span class="choose" role="button" tabindex="0">Choose File</span>
+                            <span id="file_name" class="file-name">No file chosen</span>
+                        </label>
+                    </div>
+
+                    <label class="source-text block">
+                        <div class="label-head">Paste study text</div>
+                        <textarea name="raw_text" id="raw_text" rows="8" placeholder="Paste or type study material here..." class="full-input"></textarea>
+                    </label>
+
+                    <div class="row">
+                        <div class="col">
+                            <div class="label-head">Number of questions</div>
+                            <input type="number" name="num_questions" min="1" max="20" value="5" required class="full-input">
+                        </div>
+                        <div class="col">
+                            <div class="label-head">Difficulty</div>
+                            <select name="difficulty" class="full-input">
+                                <option value="easy" {% if recommended_difficulty=='easy' %}selected{% endif %}>Easy</option>
+                                <option value="medium" {% if recommended_difficulty=='medium' %}selected{% endif %}>Medium</option>
+                                <option value="hard" {% if recommended_difficulty=='hard' %}selected{% endif %}>Hard</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="create-btn" id="createBtn">Create Quiz</button>
+                        <div id="generating" class="generating hidden">Generating quiz... <span class="dot">.</span></div>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </main>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

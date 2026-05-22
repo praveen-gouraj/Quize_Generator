@@ -1,0 +1,440 @@
+{% extends 'base.html' %}
+
+{% block title %}Results - QuizGen{% endblock %}
+{% block page_title %}Quiz Results{% endblock %}
+
+{% block content %}
+<div class="results-container">
+    <div class="result-header-section animate-slideUp">
+        <div class="result-card glassmorphism">
+            <div class="score-circle">
+                <div class="score-value">{{ percentage }}%</div>
+                <div class="score-label">Accuracy</div>
+            </div>
+            <h2 class="result-title">
+                {% if percentage >= 80 %}
+                    🎉 Excellent Work!
+                {% elif percentage >= 60 %}
+                    👍 Good Job!
+                {% else %}
+                    📚 Keep Practicing!
+                {% endif %}
+            </h2>
+            <p class="result-subtitle">You answered {{ score }} out of {{ total }} questions correctly in {{ time_taken }} seconds</p>
+        </div>
+    </div>
+
+    <div class="results-grid">
+        <div class="card glassmorphism animate-slideInLeft">
+            <h3 class="card-title">📊 Performance Breakdown</h3>
+            <div class="breakdown-grid">
+                <div class="breakdown-item">
+                    <div class="breakdown-icon">✅</div>
+                    <div class="breakdown-content">
+                        <div class="breakdown-value">{{ score }}</div>
+                        <div class="breakdown-label">Correct</div>
+                    </div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="breakdown-icon">❌</div>
+                    <div class="breakdown-content">
+                        <div class="breakdown-value">{{ total - score }}</div>
+                        <div class="breakdown-label">Wrong</div>
+                    </div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="breakdown-icon">⏱️</div>
+                    <div class="breakdown-content">
+                        <div class="breakdown-value">{{ time_taken }}s</div>
+                        <div class="breakdown-label">Time Taken</div>
+                    </div>
+                </div>
+                <div class="breakdown-item">
+                    <div class="breakdown-icon">📈</div>
+                    <div class="breakdown-content">
+                        <div class="breakdown-value">{{ difficulty|title }}</div>
+                        <div class="breakdown-label">Level</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card glassmorphism animate-slideInRight">
+            <h3 class="card-title">💡 Weak Areas</h3>
+            {% if weak_topics %}
+                <div class="weak-topics">
+                    <p class="weak-label">Focus on these topics next time:</p>
+                    <div class="topics-list">
+                        {% for topic in weak_topics.split(', ') %}
+                            <span class="topic-tag">{{ topic }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="recommendation">
+                    <p class="recommendation-text">Based on your performance, we recommend practicing these topics more thoroughly.</p>
+                </div>
+            {% else %}
+                <div class="no-weak">
+                    <p class="success-text">🌟 Great! No weak areas detected.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card glassmorphism">
+        <h3 class="card-title">📋 Answer Review</h3>
+        <div class="review-list">
+            {% for detail in details %}
+            <div class="review-item {% if detail.is_correct %}correct{% else %}wrong{% endif %}">
+                <div class="review-header">
+                    <span class="review-number">Q{{ loop.index }}</span>
+                    <span class="review-status">
+                        {% if detail.is_correct %}
+                            <span class="badge badge-success">✓ Correct</span>
+                        {% else %}
+                            <span class="badge badge-error">✗ Wrong</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <p class="review-question">{{ detail.question }}</p>
+                
+                <div class="review-answers">
+                    <div class="answer-item your-answer {% if not detail.is_correct %}wrong{% endif %}">
+                        <span class="answer-label">Your Answer:</span>
+                        <span class="answer-text">{{ detail.selected_letter }} - {{ detail.selected_text }}</span>
+                    </div>
+                    {% if not detail.is_correct %}
+                    <div class="answer-item correct-answer">
+                        <span class="answer-label">Correct Answer:</span>
+                        <span class="answer-text">{{ detail.correct_letter }} - {{ detail.correct_text }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <p class="review-topic">📚 Topic: {{ detail.topic }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="action-section">
+        <button onclick="downloadPDF()" class="button button-primary">
+            <span class="icon">📥</span> Download as PDF
+        </button>
+        <button onclick="shareQuiz()" class="button button-secondary">
+            <span class="icon">🔗</span> Share Quiz
+        </button>
+        <a href="{{ url_for('index') }}" class="button button-ghost">
+            <span class="icon">✏️</span> Create Another Quiz
+        </a>
+    </div>
+</div>
+
+<style>
+.results-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.result-header-section {
+    margin-bottom: 32px;
+}
+
+.result-card {
+    text-align: center;
+    padding: 40px;
+}
+
+.score-circle {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: conic-gradient(var(--primary) 0deg, var(--primary) calc({{ percentage }} * 3.6deg), var(--border) calc({{ percentage }} * 3.6deg));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    position: relative;
+    box-shadow: 0 0 0 8px rgba(47, 126, 255, 0.1);
+}
+
+.score-circle::before {
+    content: '';
+    position: absolute;
+    inset: 16px;
+    border-radius: 50%;
+    background: var(--bg);
+    z-index: 1;
+}
+
+.score-value {
+    position: relative;
+    z-index: 2;
+    font-size: 2.8rem;
+    font-weight: 800;
+    background: var(--primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.score-label {
+    position: relative;
+    z-index: 2;
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-top: 4px;
+}
+
+.result-title {
+    margin: 0 0 8px;
+    font-size: 2rem;
+    color: var(--text);
+}
+
+.result-subtitle {
+    margin: 0;
+    color: var(--muted);
+    font-size: 1rem;
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.breakdown-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.breakdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: rgba(47, 126, 255, 0.05);
+    border-radius: 12px;
+}
+
+.breakdown-icon {
+    font-size: 1.8rem;
+}
+
+.breakdown-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.breakdown-label {
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+.weak-topics {
+    margin-bottom: 16px;
+}
+
+.weak-label {
+    margin: 0 0 12px;
+    color: var(--text);
+    font-weight: 600;
+}
+
+.topics-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.topic-tag {
+    padding: 6px 12px;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 999px;
+    color: #fca5a5;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.recommendation-text {
+    margin: 0;
+    padding: 12px;
+    background: rgba(245, 158, 11, 0.1);
+    border-radius: 8px;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.no-weak {
+    text-align: center;
+    padding: 20px;
+}
+
+.success-text {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #a7f3d0;
+}
+
+.review-list {
+    display: grid;
+    gap: 16px;
+}
+
+.review-item {
+    padding: 16px;
+    background: rgba(47, 126, 255, 0.05);
+    border-left: 4px solid var(--border);
+    border-radius: 12px;
+}
+
+.review-item.correct {
+    border-left-color: rgba(16, 185, 129, 0.5);
+    background: rgba(16, 185, 129, 0.05);
+}
+
+.review-item.wrong {
+    border-left-color: rgba(239, 68, 68, 0.5);
+    background: rgba(239, 68, 68, 0.05);
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.review-number {
+    font-weight: 700;
+    color: var(--text);
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.badge-success {
+    background: rgba(16, 185, 129, 0.2);
+    color: #a7f3d0;
+}
+
+.badge-error {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+}
+
+.review-question {
+    margin: 0 0 12px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.review-answers {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.answer-item {
+    padding: 8px 10px;
+    background: transparent;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.answer-item.your-answer {
+    border-left: 3px solid rgba(47, 126, 255, 0.5);
+    padding-left: 10px;
+}
+
+.answer-item.your-answer.wrong {
+    border-left-color: rgba(239, 68, 68, 0.5);
+}
+
+.answer-item.correct-answer {
+    border-left: 3px solid rgba(16, 185, 129, 0.5);
+    padding-left: 10px;
+}
+
+.answer-label {
+    color: var(--muted);
+    font-size: 0.8rem;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.answer-text {
+    color: var(--text);
+    font-weight: 500;
+}
+
+.review-topic {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+.action-section {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 32px 0;
+}
+
+@media (max-width: 768px) {
+    .results-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .breakdown-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .score-circle {
+        width: 140px;
+        height: 140px;
+    }
+
+    .score-value {
+        font-size: 2.2rem;
+    }
+
+    .action-section {
+        flex-direction: column;
+    }
+
+    .action-section .button {
+        width: 100%;
+    }
+}
+</style>
+
+<script>
+function downloadPDF() {
+    window.location.href = "{{ url_for('download_pdf') }}";
+}
+
+function shareQuiz() {
+    const shareUrl = window.location.href.replace('/submit', '/share/TOKEN');
+    const textarea = document.createElement('textarea');
+    textarea.value = shareUrl;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+    alert('Share link copied to clipboard!');
+}
+</script>
+{% endblock %}

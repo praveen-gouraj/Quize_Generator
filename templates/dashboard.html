@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - QuizGen{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<div class="dashboard-hero">
+    <h2 class="hero-title">Free AI Quiz Generator</h2>
+    <p class="hero-subtitle">Create custom quizzes effortlessly from files, text, URLs, and videos.</p>
+</div>
+
+<!-- Quiz Creation Card -->
+<div class="card" style="margin-bottom: var(--space-2xl);">
+<!-- Source Tabs -->
+    <div class="source-tabs">
+        <button class="source-tab active" data-source="file">
+            <span class="nav-icon">📄</span> File
+        </button>
+        <button class="source-tab" data-source="text">
+            <span class="nav-icon">✏️</span> Text
+        </button>
+    </div>
+
+    <!-- Form -->
+    <form method="POST" action="{{ url_for('index') }}" enctype="multipart/form-data" id="quizForm" class="quiz-form">
+        <input type="hidden" id="source_type" name="source_type" value="file">
+        <input type="hidden" name="student_name" value="{{ student_name }}">
+
+        <!-- File Tab Content -->
+        <div id="tab-file" class="tab-content active">
+            <div class="upload-zone">
+                <input type="file" id="study_material" name="study_material" accept=".pdf,.txt,.docx" style="display: none;">
+                <div class="upload-icon">📄</div>
+                <h3 class="upload-text">Drag and drop a file to make quiz</h3>
+                <p class="upload-subtext">PDF, DOCX, and TXT files</p>
+                <button type="button" class="btn btn-primary" onclick="document.getElementById('study_material').click()">
+                    Upload a File
+                </button>
+                <p class="file-name" id="file_name" style="margin-top: var(--space-lg); color: var(--text-secondary);">
+                    No file selected
+                </p>
+            </div>
+        </div>
+
+        <!-- Text Tab Content -->
+        <div id="tab-text" class="tab-content">
+            <div class="form-group">
+                <label>Paste your study material</label>
+                <textarea name="raw_text" placeholder="Enter text to generate quiz..." style="min-height: 200px;"></textarea>
+            </div>
+        </div>
+
+
+
+        <!-- Settings Bar -->
+        <div class="settings-bar">
+            <div class="form-group">
+                <label>Questions</label>
+                <select name="num_questions" class="form-input">
+                    <option value="5">5</option>
+                    <option value="10" selected>10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Difficulty Level</label>
+                <select name="difficulty" class="form-input">
+                    <option value="easy">Easy</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Question Type</label>
+                <select name="question_type" class="form-input">
+                    <option value="mcq" selected>MCQ</option>
+                    <option value="fill-blank">Fill in the Blanks</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Output Language</label>
+                <select name="language" class="form-input">
+                    <option value="auto" selected>Auto</option>
+                    <option value="english">English</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary btn-lg btn-block" style="margin-top: var(--space-xl);">
+            Generate Quiz
+        </button>
+    </form>
+</div>
+
+<!-- Recent Quiz Collections -->
+<div class="card" style="margin-bottom: var(--space-2xl);">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h2 class="card-title">Recent Quiz Collections</h2>
+        </div>
+        {% if latest_score %}
+        <span style="color: var(--text-secondary); font-size: 0.95rem;">
+            Latest score: {{ latest_score }}%
+        </span>
+        {% endif %}
+    </div>
+
+    <div class="card-content">
+        {% if recent_quizzes %}
+            <div class="grid-3">
+                {% for quiz in recent_quizzes %}
+                    <div style="background: var(--surface-light); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-lg); transition: all var(--transition-normal); cursor: pointer;"
+                         onmouseover="this.style.borderColor='var(--accent)'"
+                         onmouseout="this.style.borderColor='var(--border)'">
+                        <h3 style="margin: 0 0 var(--space-sm); font-size: 1rem; color: var(--text-primary);">
+                            {{ quiz.title or 'Untitled Quiz' }}
+                        </h3>
+                        <p style="margin: 0 0 var(--space-lg); color: var(--text-secondary); font-size: 0.9rem;">
+                            {{ quiz.type or 'MCQ' }} • {{ quiz.difficulty or 'Medium' }}
+                        </p>
+                        <div style="display: flex; gap: var(--space-sm); flex-wrap: wrap;">
+                            <span style="display: inline-block; padding: var(--space-xs) var(--space-md); border-radius: var(--radius-sm); background: rgba(87, 199, 255, 0.15); color: var(--accent); font-size: 0.85rem; font-weight: 600;">
+                                {{ quiz.source or 'File' }}
+                            </span>
+                            <span style="display: inline-block; padding: var(--space-xs) var(--space-md); border-radius: var(--radius-sm); background: rgba(124, 242, 197, 0.15); color: var(--accent-secondary); font-size: 0.85rem; font-weight: 600;">
+                                {{ quiz.questions or '10' }} Qs
+                            </span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="grid-column: 1 / -1;">
+                <div class="grid-3">
+                    <div style="background: var(--surface-light); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-lg);">
+                        <h3 style="margin: 0 0 var(--space-sm); font-size: 1rem;">Planning and Scheduling Projects Quiz</h3>
+                        <p style="margin: 0 0 var(--space-lg); color: var(--text-secondary); font-size: 0.9rem;">MCQ • Difficulty Medium</p>
+                        <div style="display: flex; gap: var(--space-sm); flex-wrap: wrap;">
+                            <span style="display: inline-block; padding: var(--space-xs) var(--space-md); border-radius: var(--radius-sm); background: rgba(87, 199, 255, 0.15); color: var(--accent); font-size: 0.85rem; font-weight: 600;">File</span>
+                            <span style="display: inline-block; padding: var(--space-xs) var(--space-md); border-radius: var(--radius-sm); background: rgba(124, 242, 197, 0.15); color: var(--accent-secondary); font-size: 0.85rem; font-weight: 600;">20 Qs</span>
+                        </div>
+                    </div>
+
+                    <div style="background: var(--surface-light); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-lg);">
+                        <h3 style="margin: 0 0 var(--space-sm); font-size: 1rem;">High School Chemistry Basics</h3>
+                        <p style="margin: 0 0 var(--space-lg); color: var(--text-secondary); font-size: 0.9rem;">Adaptive Quiz • Personalized</p>
+                        <div style="display: flex; gap: var(--space-sm); flex-wrap: wrap;">
+                            <span style="display: inline-block; padding: var(--space-xs) var(--space-md); border-radius: var(--radius-sm); background: rgba(87, 199, 255, 0.15); color: var(--accent); font-size: 0.85rem; font-weight: 600;">Text</span>
+                            <span style="display: inline-block; padding: var(--space-xs) var(--space-md); border-radius: var(--radius-sm); background: rgba(124, 242, 197, 0.15); color: var(--accent-secondary); font-size: 0.85rem; font-weight: 600;">10 Qs</span>
+                        </div>
+                    </div>
+
+                    <div style="background: var(--surface-light); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-lg);">
+                        <h3 style="margin: 0 0 var(--space-sm); font-size: 1rem;">Nutrition and Fitness Facts</h3>
+                        <p style="margin: 0 0 var(--space-lg); color: var(--text-secondary); font-size: 0.9rem;">Beginner Friendly</p>
+                        <div style="display: flex; gap: var(--space-sm); flex-wrap: wrap;">
+                            <span style="display: inline-block; padding: var(--space-xs) var(--space-md); border-radius: var(--radius-sm); background: rgba(87, 199, 255, 0.15); color: var(--accent); font-size: 0.85rem; font-weight: 600;">YouTube</span>
+                            <span style="display: inline-block; padding: var(--space-xs) var(--space-md); border-radius: var(--radius-sm); background: rgba(124, 242, 197, 0.15); color: var(--accent-secondary); font-size: 0.85rem; font-weight: 600;">8 Qs</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Performance Analytics -->
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h2 class="card-title">Performance Analytics</h2>
+        </div>
+        <span style="color: var(--text-secondary); font-size: 0.95rem;">Weak topics and trend charts</span>
+    </div>
+
+    <div class="card-content">
+        <div class="grid-4">
+            <div style="background: var(--surface-light); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-xl); text-align: center;">
+                <div style="font-size: 2.5rem; font-weight: 900; color: var(--accent); margin-bottom: var(--space-sm);">
+                    {{ latest_score or '30' }}%
+                </div>
+                <div style="color: var(--text-secondary); font-size: 0.9rem;">Accuracy</div>
+            </div>
+
+            <div style="background: var(--surface-light); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-xl); text-align: center;">
+                <div style="font-size: 2.5rem; font-weight: 900; color: var(--accent-secondary); margin-bottom: var(--space-sm);">
+                    +12 XP
+                </div>
+                <div style="color: var(--text-secondary); font-size: 0.9rem;">Points today</div>
+            </div>
+
+            <div style="background: var(--surface-light); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-xl); text-align: center;">
+                <div style="font-size: 2.5rem; font-weight: 900; color: #ffa500; margin-bottom: var(--space-sm);">
+                    7 Days
+                </div>
+                <div style="color: var(--text-secondary); font-size: 0.9rem;">Streak</div>
+            </div>
+
+            <div style="background: var(--surface-light); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-xl); text-align: center;">
+                <div style="font-size: 2.5rem; font-weight: 900; color: #ff7088; margin-bottom: var(--space-sm);">
+                    3
+                </div>
+                <div style="color: var(--text-secondary); font-size: 0.9rem;">Topics Need practice</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<!-- App.js handles all interactions -->
+{% endblock %}
