@@ -9,6 +9,7 @@ Key Features:
 - Extensive standard library
 - Interpreted execution
 
+
 Data Types in Python:
 1. Integers: Whole numbers like 5, -10, 100
 2. Floats: Decimal numbers like 3.14, -2.5
