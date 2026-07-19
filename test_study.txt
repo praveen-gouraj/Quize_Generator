@@ -11,14 +11,14 @@ Key Features:
 
 
 Data Types in Python:
-1. Integers: Whole numbers like 5, -10, 100
-2. Floats: Decimal numbers like 3.14, -2.5
-3. Strings: Text data enclosed in quotes
-4. Booleans: True or False values
-5. Lists: Ordered collection of items
-6. Dictionaries: Key-value pairs
-7. Tuples: Immutable sequences
-8. Sets: Unordered collections of unique items
+1. Integers: Whole numbers like 5, -10, 100.
+2. Floats: Decimal numbers like 3.14, -2.5.
+3. Strings: Text data enclosed in quotes.
+4. Booleans: True or False values.
+5. Lists: Ordered collection of items.
+6. Dictionaries: Key-value pairs.
+7. Tuples: Immutable sequences.
+8. Sets: Unordered collections of unique items.
 
 Variables and Assignment:
 Variables are containers for storing data values. In Python, you don't need to declare the data type; it is automatically determined when you assign a value.
