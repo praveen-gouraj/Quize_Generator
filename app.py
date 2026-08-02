@@ -10,7 +10,6 @@ from io import BytesIO
 
 from flask import Flask, flash, redirect, render_template, request, session, url_for, send_file, jsonify
 from PyPDF2 import PdfReader
-
 try:
     from reportlab.lib.pagesizes import letter
     from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
