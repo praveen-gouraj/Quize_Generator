@@ -7,7 +7,6 @@ import uuid
 from collections import Counter
 from datetime import datetime
 from io import BytesIO
-
 from flask import Flask, flash, redirect, render_template, request, session, url_for, send_file, jsonify
 from PyPDF2 import PdfReader
 try:
