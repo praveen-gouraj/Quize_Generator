@@ -21,7 +21,7 @@ except ImportError:
 
 try:
     from openai import OpenAI
-except Exception:  # pragma: no cover - optional dependency during setup
+except Exception: 
     OpenAI = None
 
 
