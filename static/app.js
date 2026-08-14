@@ -10,8 +10,6 @@ function toggleTheme() {
   localStorage.setItem('darkMode', isDark ? 'false' : 'true');
   updateThemeIcon();
 }
-
-// Update theme toggle button icon
 function updateThemeIcon() {
   const themeBtn = document.querySelector('[data-theme-toggle]');
   if (themeBtn) {
