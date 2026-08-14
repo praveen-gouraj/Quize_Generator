@@ -147,8 +147,6 @@ document.addEventListener('DOMContentLoaded', function () {
       if (fileInput) fileInput.click();
     });
   }
-
-  // Quiz page: progress tracking
   const quizForm = document.getElementById('quizForm');
   if (quizForm) {
     const updateProgress = () => {
@@ -209,8 +207,6 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   });
-
-  // History page: filtering and sorting
   const sortBy = document.getElementById('sortBy');
   const difficultyFilter = document.getElementById('difficultyFilter');
   const searchInput = document.getElementById('searchInput');
@@ -233,7 +229,6 @@ document.addEventListener('DOMContentLoaded', function () {
   if (difficultyFilter) difficultyFilter.addEventListener('change', filterAndSort);
   if (searchInput) searchInput.addEventListener('input', filterAndSort);
 
-  // Settings page: toggle switches
   document.querySelectorAll('.toggle-switch').forEach(toggle => {
     const setting = toggle.dataset.setting;
     if (setting) {
@@ -252,8 +247,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 });
-
-// Animation styles
 const style = document.createElement('style');
 style.textContent = `
   @keyframes slideIn {
