@@ -59,7 +59,6 @@ function copyToClipboard(text) {
   }
 }
 document.addEventListener('DOMContentLoaded', function () {
-  // Initialize theme
   initTheme();
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
