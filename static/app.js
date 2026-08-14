@@ -5,8 +5,6 @@ function initTheme() {
   }
   updateThemeIcon();
 }
-
-// Toggle dark/light theme
 function toggleTheme() {
   const isDark = document.body.classList.toggle('light-mode');
   localStorage.setItem('darkMode', isDark ? 'false' : 'true');
