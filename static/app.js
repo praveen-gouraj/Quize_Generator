@@ -83,20 +83,15 @@ document.addEventListener('DOMContentLoaded', function () {
       tab.addEventListener('click', (e) => {
         e.preventDefault();
         const source = tab.dataset.source;
-        
-        // Update active tab
         tabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
-        
-        // Update active content
+
         const contents = document.querySelectorAll('.tab-content');
         contents.forEach(c => c.classList.remove('active'));
         const activeContent = document.getElementById(`tab-${source}`);
         if (activeContent) {
           activeContent.classList.add('active');
         }
-        
-        // Update hidden input
         const sourceInput = document.getElementById('source_type');
         if (sourceInput) {
           sourceInput.value = source;
@@ -105,7 +100,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // File input handler
   const fileInput = document.getElementById('study_material');
   const fileName = document.getElementById('file_name');
   if (fileInput && fileName) {
@@ -116,7 +110,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Drag and drop zone
   const uploadZone = document.querySelector('.upload-zone');
   if (uploadZone) {
     const preventDefaults = (e) => {
