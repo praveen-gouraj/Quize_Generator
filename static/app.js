@@ -68,8 +68,6 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
   });
-
-  // Theme toggle button
   const themeToggle = document.querySelector('[data-theme-toggle]');
   if (themeToggle) {
     themeToggle.addEventListener('click', toggleTheme);
