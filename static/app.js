@@ -1,6 +1,3 @@
-
-
-// Initialize theme from localStorage
 function initTheme() {
   const isDark = localStorage.getItem('darkMode') !== 'false';
   if (!isDark) {
