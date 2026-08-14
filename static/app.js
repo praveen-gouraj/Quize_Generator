@@ -58,11 +58,6 @@ function copyToClipboard(text) {
     document.body.removeChild(textarea);
   }
 }
-
-/* ========================================
-   FORM & INTERACTION HANDLERS
-   ======================================== */
-
 document.addEventListener('DOMContentLoaded', function () {
   // Initialize theme
   initTheme();
