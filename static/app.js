@@ -23,8 +23,6 @@ function toggleSidebar() {
     sidebar.classList.toggle('open');
   }
 }
-
-// Show notification toast
 function showNotification(message, type = 'success') {
   const notification = document.createElement('div');
   notification.className = `notification notification-${type}`;
