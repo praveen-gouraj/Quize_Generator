@@ -61,8 +61,6 @@ function copyToClipboard(text) {
 document.addEventListener('DOMContentLoaded', function () {
   // Initialize theme
   initTheme();
-
-  // Keyboard shortcuts
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       const sidebar = document.querySelector('.sidebar');
