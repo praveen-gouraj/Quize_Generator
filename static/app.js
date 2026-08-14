@@ -73,13 +73,10 @@ document.addEventListener('DOMContentLoaded', function () {
     themeToggle.addEventListener('click', toggleTheme);
   }
 
-  // Sidebar toggle button
   const sidebarToggle = document.querySelector('[data-sidebar-toggle]');
   if (sidebarToggle) {
     sidebarToggle.addEventListener('click', toggleSidebar);
   }
-
-  // Dashboard page: tabs for file/text/article/youtube
   const tabs = document.querySelectorAll('.source-tabs .source-tab');
   if (tabs.length) {
     tabs.forEach(tab => {
