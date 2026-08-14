@@ -1,6 +1,4 @@
-/* ========================================
-   GLOBAL UTILITIES
-   ======================================== */
+
 
 // Initialize theme from localStorage
 function initTheme() {
