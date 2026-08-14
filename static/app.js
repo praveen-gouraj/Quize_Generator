@@ -46,8 +46,6 @@ function showNotification(message, type = 'success') {
     setTimeout(() => notification.remove(), 300);
   }, 3000);
 }
-
-// Copy text to clipboard
 function copyToClipboard(text) {
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text);
