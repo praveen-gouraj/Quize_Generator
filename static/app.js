@@ -50,7 +50,6 @@ function copyToClipboard(text) {
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text);
   } else {
-    // Fallback for older browsers
     const textarea = document.createElement('textarea');
     textarea.value = text;
     document.body.appendChild(textarea);
