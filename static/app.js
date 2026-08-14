@@ -175,8 +175,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     quizForm.addEventListener('change', updateProgress);
     updateProgress();
-
-    // Form validation on submit
     quizForm.addEventListener('submit', (e) => {
       const unanswered = document.querySelectorAll('.question-card').length - 
                          document.querySelectorAll('input[type="radio"]:checked').length;
@@ -187,8 +185,6 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   }
-
-  // Result page: PDF and share buttons
   document.querySelectorAll('.btn-download-pdf').forEach(btn => {
     btn.addEventListener('click', function(e) {
       e.preventDefault();
