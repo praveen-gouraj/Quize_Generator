@@ -890,8 +890,6 @@ def view_shared_quiz(token):
         difficulty=quiz_record["difficulty"],
         token=token,
     )
-
-
 @app.route("/api/copy-text/<text>")
 def copy_text(text):
     return jsonify({"status": "success", "message": f"Copied: {text}"})
