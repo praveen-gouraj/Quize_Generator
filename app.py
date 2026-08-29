@@ -53,7 +53,24 @@ def init_db():
     )
 
 
-
+    connection.execute(
+        """
+        CREATE TABLE IF NOT EXISTS quiz_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            quiz_data TEXT NOT NULL,
+            score INTEGER,
+            total_questions INTEGER,
+            percentage INTEGER,
+            difficulty TEXT,
+            weak_topics TEXT,
+            time_taken INTEGER,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            share_token TEXT UNIQUE,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        )
+        """
+    )
     
     connection.execute(
         """
